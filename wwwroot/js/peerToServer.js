@@ -4,7 +4,6 @@
 
 let roomId = document.getElementById("meetingId").value;
 
-
 joinButton.addEventListener("click", () => {
     connection.send("onEnterRoom", roomId);
 });
@@ -23,8 +22,12 @@ connection.on("onNewClientEnteredInRoom", (newClientId) => {
     setupConnectionOnOthersEntry(newClientId);
 });
 
-connection.on("onClientLeftInRoom", (clientId) => {
-    console.log(`client left - ${clientId}`);
+connection.on("onClientLeftFromRoom", (clientId) => {
+    disposePeer(clientId);
+});
+
+connection.on("onStopShare", (streamId) => {
+    removeVideoStream([streamId]);
 });
 
 connection.start().then(() => {
@@ -33,3 +36,12 @@ connection.start().then(() => {
 }, () => {
     console.log("Signal Connection with server could not be made. Something went wrong!");
 })
+
+disconnectButton.addEventListener("click", () => {
+    connection.send("onLeftRoom", roomId);
+    window.location.assign("/Connect");
+});
+
+function informOthersOfStoppedShare(streamId) {
+    connection.send("onStopShare", roomId, streamId);
+}

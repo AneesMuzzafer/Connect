@@ -53,7 +53,18 @@ namespace Connect.Signal
                 room.AddClient(Context.ConnectionId);
                 await Clients.OthersInGroup(roomId).SendAsync("onNewClientEnteredInRoom", Context.ConnectionId);
             }
+        }
 
+
+        public async Task onLeftRoom(string roomId)
+        {
+            Room? room = _roomManager.Rooms.Find(r => string.Equals(roomId, r.Id));
+
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId);
+
+            await Clients.OthersInGroup(roomId).SendAsync("onClientLeftFromRoom", Context.ConnectionId);
+
+            room?.RemoveClient(Context.ConnectionId);
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
@@ -64,16 +75,18 @@ namespace Connect.Signal
                 {
                     Groups.RemoveFromGroupAsync(Context.ConnectionId, room.Id);
 
-                    Clients.OthersInGroup(room.Id).SendAsync("onClientLeftInRoom", Context.ConnectionId);
+                    Clients.OthersInGroup(room.Id).SendAsync("onClientLeftFromRoom", Context.ConnectionId);
 
                     room.RemoveClient(Context.ConnectionId);
                 }
             }
 
-
-
-            Debug.WriteLine($"Connection Disconnected: {Context.ConnectionId}");
             return base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task onStopShare(string roomId, string streamId)
+        {
+            await Clients.OthersInGroup(roomId).SendAsync("onStopShare", streamId);
         }
 
         public async Task offer(object offer, string receiverId)

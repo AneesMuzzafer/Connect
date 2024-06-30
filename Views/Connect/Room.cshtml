@@ -4,11 +4,24 @@
 
 <button id="join">Join</button>
 
-<div id="playerWrapper" class="mt-2 border-1 w-50 display-flex border border-solid" style="width: 100%; height: 200px;">
-    <video id="localVideo" autoplay muted playsinline controls="false" style="width: 180px; height: 180px; border: solid 2px gray;"></video>
+<div style="width: 100%; height: 30px; display:flex">
+    <button class="" id="disconnect">Hang Up</button>
+    <button id="video-off">Turn Off Video</button>
+    <button id="mute">Mute</button>
+    <button id="share">Share Screen</button>
+    <button id="stopshare">Stop Share Screen</button>
 </div>
 
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/userInterface.js" asp-append-version="true"></script>
-<script src="~/js/peerToServer.js" asp-append-version="true"></script>
-<script src="~/js/peerToPeer.js" asp-append-version="true"></script>
+<div id="playerWrapper" class="mt-2 border-1 display-flex border border-solid" style="width: 100%; height: 400px">
+    <div style="flex:1;">
+        <video id="localVideo" autoplay playsinline style="width: 100%; height: 100%; border: solid 2px gray;"></video>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/userInterface.js" asp-append-version="true"></script>
+    <script src="~/js/peerToServer.js" asp-append-version="true"></script>
+    <script src="~/js/peerToPeer.js" asp-append-version="true"></script>
+}
