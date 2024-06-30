@@ -1,0 +1,12 @@
+﻿<h1>Connect</h1>
+
+<input id="setMeetingId" type="text" value="abc" />
+<button id="EnterMeeting" type="submit">Enter</button>
+
+<script>
+     document.getElementById("EnterMeeting").addEventListener("click", () => {
+
+         let val = document.getElementById("setMeetingId").value;
+         location.href = `/Connect/${val}`;
+     });
+</script>

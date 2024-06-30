@@ -1,4 +1,5 @@
 using Connect.Data;
+using Connect.Signal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,6 @@ namespace Connect
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -20,9 +20,12 @@ namespace Connect
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddSignalR();
+
+            builder.Services.AddSingleton<RoomManager>();
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -30,7 +33,6 @@ namespace Connect
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -45,6 +47,8 @@ namespace Connect
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            app.MapHub<ConnectHub>("/Signal/Connect");
 
             app.Run();
         }
