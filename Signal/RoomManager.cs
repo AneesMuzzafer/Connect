@@ -1,4 +1,6 @@
-﻿namespace Connect.Signal
+﻿using System.Diagnostics;
+
+namespace Connect.Signal
 {
     public class RoomManager
     {
@@ -9,11 +11,17 @@
         }
 
         public void AddRoom(Room room) {
+            Debug.WriteLine($"Added - {room.Id}");
             Rooms.Add(room);
         }
 
         public void RemoveRoom(Room room) {
             Rooms.Remove(room);
+        }
+
+        public bool RoomExist(string roomId)
+        {
+            return Rooms.Exists(room => string.Equals(room.Id, roomId));
         }
 
     }

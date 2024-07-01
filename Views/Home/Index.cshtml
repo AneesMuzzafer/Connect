@@ -3,6 +3,24 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <button type="submit" id="startMeeting">Start a meeting</button>
+
+    <input id="setMeetingId" type="text" value="abc" />
+    <button id="enterMeeting" type="submit">Enter</button>
+
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("startMeeting").addEventListener("click", () => {
+            location.href = `/Start`;
+        });
+
+        document.getElementById("enterMeeting").addEventListener("click", () => {
+
+            let val = document.getElementById("setMeetingId").value;
+            location.href = `/Connect/${val}`;
+        });
+    </script>
+}

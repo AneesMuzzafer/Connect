@@ -1,6 +1,5 @@
 ﻿const joinButton = document.getElementById("join");
 const disconnectButton = document.getElementById("disconnect");
-nio''
 const localVideoElement = document.getElementById("localVideo");
 
 let isMuted = false;

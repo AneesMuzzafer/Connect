@@ -1,12 +1,27 @@
-﻿<h1>Connect</h1>
+﻿<h1>@Model</h1>
 
-<input id="setMeetingId" type="text" value="abc" />
-<button id="EnterMeeting" type="submit">Enter</button>
+<input hidden id="meetingId" value="@Model" />
 
-<script>
-     document.getElementById("EnterMeeting").addEventListener("click", () => {
+<button id="join">Join</button>
 
-         let val = document.getElementById("setMeetingId").value;
-         location.href = `/Connect/${val}`;
-     });
-</script>
+<div style="width: 100%; height: 30px; display:flex">
+    <button class="" id="disconnect">Hang Up</button>
+    <button id="video-off">Turn Off Video</button>
+    <button id="mute">Mute</button>
+    <button id="share">Share Screen</button>
+    <button id="stopshare">Stop Share Screen</button>
+</div>
+
+<div id="playerWrapper" class="mt-2 border-1 display-flex border border-solid" style="width: 100%; height: 400px">
+    <div style="flex:1;">
+        <video id="localVideo" autoplay playsinline style="width: 100%; height: 100%; border: solid 2px gray;"></video>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/userInterface.js" asp-append-version="true"></script>
+    <script src="~/js/peerToServer.js" asp-append-version="true"></script>
+    <script src="~/js/peerToPeer.js" asp-append-version="true"></script>
+}
