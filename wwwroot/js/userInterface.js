@@ -65,16 +65,18 @@ $("#share").click(async function () {
         try {
             const constraints = { 'video': true };
             screenStream = await navigator.mediaDevices.getDisplayMedia(constraints);
-            addVideoStream(screenStream, "-myVideo");
+            addVideoStream(screenStream, "Screen share");
 
             screenStream.getVideoTracks().forEach(t => t.onended = function () {
                 removeVideoStream([screenStream.id]);
                 informOthersOfStoppedShare(screenStream.id);
+                isSharingScreen = false;
+                document.getElementById("share").style.outlineStyle = "none";
             });
             addScreenStreamToPeerConnections(screenStream);
 
             isSharingScreen = true;
-            this.style.background = "purple";
+            this.style.outlineStyle = "solid";
 
         } catch (error) {
             connection.send("error", error);
@@ -87,7 +89,7 @@ $("#share").click(async function () {
         informOthersOfStoppedShare(screenStream.id);
 
         isSharingScreen = false;
-        this.style.background = "white";
+        this.style.outlineStyle = "none";
     }
 });
 
@@ -104,19 +106,21 @@ async function playVideoFromCamera() {
 
 playVideoFromCamera();
 
-function addVideoStream(stream) {
+function addVideoStream(stream, text) {
 
     let videoId = "video-" + stream.id;
 
     if (document.getElementById(videoId)) return;
 
     const videoWrapper = document.createElement("div");
-    //videoWrapper.style = "flex: 1;";
     videoWrapper.id = videoId;
     videoWrapper.classList.add("videoTile");
-    //videoWrapper.classList.add("items-center");
-    //videoWrapper.classList.add("justify - center");
     videoWrapper.classList.add("p-2");
+    videoWrapper.style.position = "relative";
+
+    const overlayTextElement = document.createElement("div");
+    overlayTextElement.classList.add("overlay-text");
+    overlayTextElement.innerText = text;
 
     const videoElement = document.createElement("video");
     videoElement.autoplay = "true";
@@ -130,11 +134,71 @@ function addVideoStream(stream) {
     videoElement.srcObject = stream;
 
     videoWrapper.insertAdjacentElement("afterbegin", videoElement);
+    videoWrapper.insertAdjacentElement("beforeend", overlayTextElement);
 
     document.getElementById("playerWrapper").insertAdjacentElement("beforeend", videoWrapper);
     numOfConnections += 1;
     updateVideoTiles(numOfConnections);
 }
+
+function updateLobbyRoomUI(clients) {
+    if (clients.length > 0) {
+        let el = document.getElementById("peopleInRoom");
+
+        switch (clients.length) {
+            case 1:
+                el.innerText = `${clients[0].Name} is in the room`
+                break;
+            case 2:
+                el.innerText = `${clients[0].Name} & ${clients[1].Name} are in the room`
+                break;
+            default:
+                let inRoom = clients.length - 2;
+                let inRoomText = inRoom <= 1 ? " is" : "s are";
+                el.innerText = `${clients[0].Name}, ${clients[1].Name} & ${inRoom} other${inRoomText} in the room`
+        }
+    }
+}
+
+function removeVideoStream(streamIds) {
+    streamIds.forEach(id => {
+        let videoId = "video-" + id;
+        let streamToBeRemoved = document.getElementById(videoId)
+        if (streamToBeRemoved) {
+            streamToBeRemoved.remove();
+            numOfConnections -= 1;
+            updateVideoTiles(numOfConnections);
+        }
+    });
+}
+
+function updateVideoTiles(num) {
+    let videoTiles = document.querySelectorAll(".videoTile");
+    videoTiles.forEach(tile => {
+        tile.style.width = getTileWidth(num);
+        tile.style.height = getTileHeight(num);
+
+        if (num > 1) {
+            tile.classList.replace("p-10", "p-2");
+        } else {
+            tile.classList.replace("p-2", "p-10");
+        }
+    });
+}
+
+document.getElementById('copyButton').addEventListener('click', function () {
+    navigator.clipboard.writeText(roomId).then(() => {
+        const clipboardIcon = document.getElementById('clipboard-icon');
+        clipboardIcon.classList.replace('bi-clipboard', 'bi-clipboard-check');
+
+        setTimeout(() => {
+            clipboardIcon.classList.replace('bi-clipboard-check', 'bi-clipboard');
+        }, 2000);
+
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+});
 
 function getTileWidth(num) {
 
@@ -236,31 +300,4 @@ function getTileHeight(num) {
                 return "calc((100vh - 120px) / 4)";
         }
     }
-}
-
-
-function removeVideoStream(streamIds) {
-    streamIds.forEach(id => {
-        let videoId = "video-" + id;
-        let streamToBeRemoved = document.getElementById(videoId)
-        if (streamToBeRemoved) {
-            streamToBeRemoved.remove();
-            numOfConnections -= 1;
-            updateVideoTiles(numOfConnections);
-        }
-    });
-}
-
-function updateVideoTiles(num) {
-    let videoTiles = document.querySelectorAll(".videoTile");
-    videoTiles.forEach(tile => {
-        tile.style.width = getTileWidth(num);
-        tile.style.height = getTileHeight(num);
-
-        if (num > 1) {
-            tile.classList.replace("p-10", "p-2");
-        } else {
-            tile.classList.replace("p-2", "p-10");
-        }
-    });
 }

@@ -7,8 +7,11 @@ function setupConnectionsOnSelfEntry(clients) {
 
         const peerConnection = new RTCPeerConnection(configuration);
 
+        let connectionId = client.ConnectionId;
+
         const peer = {
-            clientId: client,
+            clientId: connectionId,
+            clientName: client.Name,
             peerConnectionInstance: peerConnection,
             streamIds: []
         };
@@ -23,12 +26,12 @@ function setupConnectionsOnSelfEntry(clients) {
 
             const [remoteStream] = event.streams;
             peer.streamIds.push(remoteStream.id);
-            addVideoStream(remoteStream, client);
+            addVideoStream(remoteStream, peer.clientName);
         });
 
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
-        connection.send("offer", { offer: offer }, client);
+        connection.send("offer", { offer: offer }, connectionId);
 
         peerConnection.addEventListener('icecandidate', event => {
             if (event.candidate) {
@@ -38,8 +41,7 @@ function setupConnectionsOnSelfEntry(clients) {
 
         peerConnection.addEventListener('connectionstatechange', event => {
             if (peerConnection.connectionState === 'connected') {
-                // Peers connected!
-                console.log("Peers connected");
+                //console.log(`New Connection made with ${client.Name}`);
             }
         });
 
@@ -47,6 +49,7 @@ function setupConnectionsOnSelfEntry(clients) {
 };
 
 connection.on("message", async (message, senderId) => {
+    
     let peerInstance = peerConnections.find(p => p.clientId == senderId).peerConnectionInstance;
 
     if (message.offer) {
@@ -73,11 +76,14 @@ connection.on("message", async (message, senderId) => {
     }
 });
 
-function setupConnectionOnOthersEntry(newClientId) {
+function setupConnectionOnOthersEntry(newClient) {
     const peerConnection = new RTCPeerConnection(configuration);
 
+    let connectionId = newClient.ConnectionId;
+
     const peer = {
-        clientId: newClientId,
+        clientId: connectionId,
+        clientName: newClient.Name,
         peerConnectionInstance: peerConnection,
         streamIds: []
     };
@@ -91,19 +97,18 @@ function setupConnectionOnOthersEntry(newClientId) {
     peerConnection.addEventListener('track', async (event) => {
         const [remoteStream] = event.streams;
         peer.streamIds.push(remoteStream.id);
-        addVideoStream(remoteStream, newClientId);
+        addVideoStream(remoteStream, peer.clientName);
     });
 
     peerConnection.addEventListener('icecandidate', event => {
         if (event.candidate) {
-            connection.send('newIceCandidate', { iceCandidate: event.candidate }, newClientId);
+            connection.send('newIceCandidate', { iceCandidate: event.candidate }, connectionId);
         }
     });
 
     peerConnection.addEventListener('connectionstatechange', event => {
         if (peerConnection.connectionState === 'connected') {
-            // Peers connected!
-            console.log("Peers conngkyjected");
+            //console.log(`New Connection made with ${newClient.Name}`);
         }
     });
 };
@@ -121,7 +126,6 @@ function addScreenStreamToPeerConnections(screenStream) {
             await peerInstance.setLocalDescription(offer);
             connection.send("offer", { offer: offer }, peer.clientId);
         });
-
     });
 }
 

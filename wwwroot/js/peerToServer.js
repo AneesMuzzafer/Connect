@@ -11,7 +11,7 @@ joinButton.addEventListener("click", () => {
 
 connection.on("onGetClientsInRoomFromWaitingRoom", (clientListJson) => {
     let clients = JSON.parse(clientListJson);
-    console.log("Received client List in room from Waiting Room: ", clients);
+    updateLobbyRoomUI(clients);
 });
 
 connection.on("onGetClientsInRoomFromMeetingRoom", (clientListJson) => {
@@ -19,8 +19,9 @@ connection.on("onGetClientsInRoomFromMeetingRoom", (clientListJson) => {
     setupConnectionsOnSelfEntry(clients);
 });
 
-connection.on("onNewClientEnteredInRoom", (newClientId) => {
-    setupConnectionOnOthersEntry(newClientId);
+connection.on("onNewClientEnteredInRoom", (newClientJson) => {
+    let newClient = JSON.parse(newClientJson);
+    setupConnectionOnOthersEntry(newClient);
 });
 
 connection.on("onClientLeftFromRoom", (clientId) => {
@@ -33,9 +34,9 @@ connection.on("onStopShare", (streamId) => {
 
 connection.start().then(() => {
     connection.send("onEnterWaitingRoom", roomId);
-    console.log("Signal Connection made with server.");
+    //console.log("Signal Connection made with server.");
 }, () => {
-    console.log("Signal Connection with server could not be made. Something went wrong!");
+    console.Error("Signal Connection with server could not be made. Something went wrong!");
 })
 
 disconnectButton.addEventListener("click", () => {

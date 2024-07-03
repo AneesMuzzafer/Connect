@@ -5,22 +5,14 @@
 <div class="flex-1 flex justify-end gap-10 pr-10">
     @if (SignInManager.IsSignedIn(User))
     {
-        var user = await UserManager.GetUserAsync(User);
-
-        <span class="hi md:block">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @user?.AccountName!</a>
-        </span>
         <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button type="submit" class="">Logout</button>
+            <button type="submit" class="rounded-md bg-white px-3 py-0.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100">Logout</button>
         </form>
     }
     else
     {
-        <span class="nav-item">
-            <a class="" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </span>
-        <span class="nav-item">
-            <a class="" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <span class="rounded-md bg-white px-4 py-0.5 text-sm font-medium text-gray-900 hover:bg-indigo-50 hover:text-blue-700">
+            <a  asp-area="Identity" asp-page="/Account/Login">Login</a>
         </span>
     }
 </div>

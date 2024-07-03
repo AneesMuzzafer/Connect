@@ -26,12 +26,6 @@ namespace Connect
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //builder.Services.Configure<IdentityOptions>(options =>
-            //{
-            //    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
-            //    options.User.RequireUniqueEmail = false;
-            //});
-
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddSignalR();
@@ -55,6 +49,7 @@ namespace Connect
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

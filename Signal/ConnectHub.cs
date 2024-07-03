@@ -1,5 +1,6 @@
 ﻿using Connect.Data;
 using Connect.Models;
+using Connect.Utils;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -23,7 +24,7 @@ namespace Connect.Signal
         {
             Room? room = _roomManager.Rooms.Find(r => string.Equals(roomId, r.Id));
 
-            List<string> clientsInRoom;
+            List<Client> clientsInRoom;
 
             if (room != null)
             {
@@ -34,7 +35,7 @@ namespace Connect.Signal
                 Room newRoom = new Room(roomId);
                 _roomManager.AddRoom(newRoom);
 
-                clientsInRoom = new List<string>();
+                clientsInRoom = new List<Client>();
             }
 
             await Clients.Caller.SendAsync("onGetClientsInRoomFromWaitingRoom", JsonSerializer.Serialize(clientsInRoom));
@@ -43,31 +44,37 @@ namespace Connect.Signal
         public async Task onEnterRoom(string roomId)
         {
             Room? room = _roomManager.Rooms.Find(r => string.Equals(roomId, r.Id));
-            Debug.WriteLine("On Enter room");
-
             if (room == null)
             {
                 return;
             }
 
-            List<string> clientsInRoom = room.GetClientsInRoom();
+            List<Client> clientsInRoom = room.GetClientsInRoom();
 
-            if (!clientsInRoom.Exists(c => string.Equals(c, Context.ConnectionId)))
+            if (!clientsInRoom.Exists(c => string.Equals(c.ConnectionId, Context.ConnectionId)))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, room.Id);
                 await Clients.Caller.SendAsync("onGetClientsInRoomFromMeetingRoom", JsonSerializer.Serialize(clientsInRoom));
 
-                room.AddClient(Context.ConnectionId);
-                await Clients.OthersInGroup(roomId).SendAsync("onNewClientEnteredInRoom", Context.ConnectionId);
+                var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                ApplicationUser user = await _dbContext.Users.FindAsync(userId);
+                string clientName = user.AccountName ?? user.UserName;
+
+                Client newClient = new Client()
+                {
+                    ConnectionId = Context.ConnectionId,
+                    Name = clientName
+                };
+
+                room.AddClient(newClient);
+                await Clients.OthersInGroup(roomId).SendAsync("onNewClientEnteredInRoom", JsonSerializer.Serialize(newClient));
 
                 Participant participant = new Participant()
                 {
-                    UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                    UserId = userId,
                     MeetingId = _roomManager.GetRoom(roomId).MeetingId,
                     JoinedAt = DateTime.Now
                 };
-
-                Debug.WriteLine($"Participant: {participant.UserId} - {participant.MeetingId}");
 
                 _dbContext.Participants.Add(participant);
 
@@ -86,7 +93,7 @@ namespace Connect.Signal
 
             room?.RemoveClient(Context.ConnectionId);
 
-            if (room?.ClientIds.Count < 1)
+            if (room?.Clients.Count < 1)
             {
                 var meetingId = _roomManager.GetRoom(roomId).MeetingId;
                 Meeting meeting = _dbContext.Meetings.FirstOrDefault(m => m.Id == meetingId);
@@ -104,7 +111,7 @@ namespace Connect.Signal
         {
             foreach (Room room in _roomManager.Rooms.ToList())
             {
-                if (room.ClientIds.Contains(Context.ConnectionId))
+                if (room.Clients.Exists(c => string.Equals(c.ConnectionId, Context.ConnectionId)))
                 {
                     Groups.RemoveFromGroupAsync(Context.ConnectionId, room.Id);
 
@@ -112,15 +119,18 @@ namespace Connect.Signal
 
                     room.RemoveClient(Context.ConnectionId);
 
-                    if (room?.ClientIds.Count < 1)
+                    if (room?.Clients.Count < 1)
                     {
                         var meetingId = _roomManager.GetRoom(room.Id).MeetingId;
                         Meeting meeting = _dbContext.Meetings.FirstOrDefault(m => m.Id == meetingId);
 
-                        meeting.EndedAt = DateTime.Now;
+                        if (meeting != null)
+                        {
+                            meeting.EndedAt = DateTime.Now;
 
-                        _dbContext.Meetings.Update(meeting);
-                        _dbContext.SaveChangesAsync();
+                            _dbContext.Meetings.Update(meeting);
+                            _dbContext.SaveChangesAsync();
+                        }
 
                         _roomManager.Rooms.Remove(room);
                     }

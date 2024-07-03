@@ -5,7 +5,14 @@
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
-<h3>@ViewData["Title"]</h3>
+
+<h1>@ViewData["Title"]</h1>
+
+<li class="nav-item">
+    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+</li>
+
+@* <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
@@ -28,3 +35,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+ *@

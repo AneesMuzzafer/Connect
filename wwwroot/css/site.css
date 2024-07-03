@@ -1,22 +1,7 @@
-/*html {
-  font-size: 14px;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-*/
 .btn-circle {
     width: 40px;
     height: 40px;
@@ -26,14 +11,15 @@ html {
     align-items: center;
     background-color: white;
     border: solid 1px white;
+    color: black;
 }
 
 .btn-circle:hover {
-    background-color: rgba(255,255, 255, 0.5);
+    background-color: rgba(255,255, 255, 0.1);
+    color: white;
 }
 
 .video-control {
-    color: black;
     font-size: 16px;
 }
 
@@ -43,4 +29,21 @@ html {
 
 .full-height-footer {
     height: calc(100vh - 80px);
+}
+
+.overlay-text {
+    position: absolute;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    bottom: 20px;
+    right: 20px;
+    padding: 4px 40px;
+    border-radius: 30px
+}
+
+.share-outline {
+    outline-width: 2px;
+    outline-color: white;
+    outline-offset: 4px;
+    outline-style: none;
 }

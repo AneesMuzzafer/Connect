@@ -5,8 +5,8 @@
 <input hidden id="meetingId" value="@Model" />
 
 <div id="panel-join" class="full-height flex flex-col flex-wrap md:flex-row">
-    <div id="playerWrapperx" class="flex-1 relative flex items-center justify-center px-10 md:flex-[2] md:justify-end">
-        <div class="relative flex w-full items-center justify-center md:w-8/12">
+    <div id="playerWrapperx" class="flex-1 relative flex flex items-center justify-center px-10 md:flex-[2] md:justify-end">
+        <div class="relative flex w-full flex-col items-center justify-center md:w-8/12">
             <div class="w-full">
                 <video id="localVideoLobby" class="w-full rounded-2xl bg-gray-700" autoplay playsinline></video>
             </div>
@@ -21,12 +21,17 @@
                 </div>
             </div>
         </div>
+
     </div>
     <div class="flex-1 flex flex-col items-center justify-start px-10 md:justify-center md:items-start">
         <div class="flex flex-col items-center gap-5">
             <div class="text-xl font-medium">@Model</div>
-            <div>No one else is here</div>
+            <div id="peopleInRoom">No one else is here</div>
             <button class="rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 px-10 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800" id="join">Join</button>
+            <div id="copyButton" class="mt-2 flex transform cursor-pointer gap-4 rounded-full border border-indigo-700 px-4 py-1.5 text-xs text-indigo-600 transition duration-300 ease-in-out hover:scale-105">
+                <div>Copy joining link</div>
+                <i id="clipboard-icon" class="bi bi-clipboard"></i>
+            </div>
         </div>
     </div>
 </div>
@@ -49,10 +54,10 @@
             <button class="btn btn-circle" id="mute">
                 <i class="bi bi-mic-fill video-control"></i>
             </button>
-            <button class="btn btn-circle" id="share">
+            <button class="btn btn-circle share-outline" id="share">
                 <i class="bi bi-tv-fill video-control"></i>
             </button>
-
+          
         </div>
     </div>
 </div>

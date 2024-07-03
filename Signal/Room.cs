@@ -1,16 +1,18 @@
-﻿namespace Connect.Signal
+﻿using Connect.Utils;
+
+namespace Connect.Signal
 {
     public class Room
     {
         public string Id { get; set; }
         public int MeetingId { get; set; }
 
-        public List<string> ClientIds { get; set; }
+        public List<Client> Clients { get; set; }
 
         public Room(string id)
         {
             Id = id;
-            ClientIds = new List<string>();
+            Clients = new List<Client>();
         }
 
         public void SetMeetingId(int meetingId)
@@ -18,19 +20,20 @@
             MeetingId = meetingId;
         }
 
-        public void AddClient(string connectionId)
+        public void AddClient(Client client)
         {
-            ClientIds.Add(connectionId);
+            Clients.Add(client);
         }
 
         public void RemoveClient(string connectionId)
         {
-            ClientIds.Remove(connectionId);
+            Client client = Clients.Find(c => string.Equals(c.ConnectionId, connectionId));
+            Clients.Remove(client);
         }
 
-        public List<string> GetClientsInRoom()
+        public List<Client> GetClientsInRoom()
         {
-            return ClientIds;
+            return Clients;
         }
     }
 }
