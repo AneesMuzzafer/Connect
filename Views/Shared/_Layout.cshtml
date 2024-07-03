@@ -17,9 +17,10 @@
     <header>
         <nav class="border-b-2 flex h-10 items-center border-b-indigo-600 bg-white">
             <div class="flex-1 pl-10">
-                <a class="" asp-area="" asp-controller="Home" asp-action="Index">
+                <partial name="_LogoPartial" />
+                @* <a class="" asp-area="" asp-controller="Home" asp-action="Index">
                     <h1 class="inline-block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-lg font-medium text-transparent md:text-xl">Connect</h1>
-                </a>
+                </a> *@
             </div>
             <partial name="_LoginPartial" />
         </nav>

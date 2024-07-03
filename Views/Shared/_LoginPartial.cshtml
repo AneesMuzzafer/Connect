@@ -1,12 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <div class="flex-1 flex justify-end gap-10 pr-10">
     @if (SignInManager.IsSignedIn(User))
     {
-        <span class="hidden md:block">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        var user = await UserManager.GetUserAsync(User);
+
+        <span class="hi md:block">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @user?.AccountName!</a>
         </span>
         <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button type="submit" class="">Logout</button>

@@ -1,4 +1,5 @@
 using Connect.Data;
+using Connect.Models;
 using Connect.Signal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +23,15 @@ namespace Connect
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //builder.Services.Configure<IdentityOptions>(options =>
+            //{
+            //    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
+            //    options.User.RequireUniqueEmail = false;
+            //});
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddSignalR();
