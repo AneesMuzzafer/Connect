@@ -3,7 +3,7 @@
     public class Room
     {
         public string Id { get; set; }
-        //public string RoomCode { get; set; }
+        public int MeetingId { get; set; }
 
         public List<string> ClientIds { get; set; }
 
@@ -11,6 +11,11 @@
         {
             Id = id;
             ClientIds = new List<string>();
+        }
+
+        public void SetMeetingId(int meetingId)
+        {
+            MeetingId = meetingId;
         }
 
         public void AddClient(string connectionId)

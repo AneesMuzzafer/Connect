@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Connect.Data;
+using Connect.Models;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace Connect.Signal
@@ -7,9 +11,12 @@ namespace Connect.Signal
     public class ConnectHub : Hub
     {
         private readonly RoomManager _roomManager;
-        public ConnectHub(RoomManager roomManager)
+        private readonly ApplicationDbContext _dbContext;
+
+        public ConnectHub(RoomManager roomManager, ApplicationDbContext dbContext)
         {
             _roomManager = roomManager;
+            _dbContext = dbContext;
         }
 
         public async Task onEnterWaitingRoom(string roomId)
@@ -24,7 +31,6 @@ namespace Connect.Signal
             }
             else
             {
-                //Room newRoom = new Room(Guid.NewGuid().ToString());
                 Room newRoom = new Room(roomId);
                 _roomManager.AddRoom(newRoom);
 
@@ -46,8 +52,6 @@ namespace Connect.Signal
 
             List<string> clientsInRoom = room.GetClientsInRoom();
 
-            Debug.WriteLine($"Clients in room : {clientsInRoom.Count}");
-
             if (!clientsInRoom.Exists(c => string.Equals(c, Context.ConnectionId)))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, room.Id);
@@ -55,6 +59,19 @@ namespace Connect.Signal
 
                 room.AddClient(Context.ConnectionId);
                 await Clients.OthersInGroup(roomId).SendAsync("onNewClientEnteredInRoom", Context.ConnectionId);
+
+                Participant participant = new Participant()
+                {
+                    UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                    MeetingId = _roomManager.GetRoom(roomId).MeetingId,
+                    JoinedAt = DateTime.Now
+                };
+
+                Debug.WriteLine($"Participant: {participant.UserId} - {participant.MeetingId}");
+
+                _dbContext.Participants.Add(participant);
+
+                await _dbContext.SaveChangesAsync();
             }
         }
 
@@ -68,11 +85,24 @@ namespace Connect.Signal
             await Clients.OthersInGroup(roomId).SendAsync("onClientLeftFromRoom", Context.ConnectionId);
 
             room?.RemoveClient(Context.ConnectionId);
+
+            if (room?.ClientIds.Count < 1)
+            {
+                var meetingId = _roomManager.GetRoom(roomId).MeetingId;
+                Meeting meeting = _dbContext.Meetings.FirstOrDefault(m => m.Id == meetingId);
+
+                meeting.EndedAt = DateTime.Now;
+
+                _dbContext.Meetings.Update(meeting);
+                await _dbContext.SaveChangesAsync();
+
+                _roomManager.Rooms.Remove(room);
+            }
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            foreach (Room room in _roomManager.Rooms)
+            foreach (Room room in _roomManager.Rooms.ToList())
             {
                 if (room.ClientIds.Contains(Context.ConnectionId))
                 {
@@ -81,6 +111,19 @@ namespace Connect.Signal
                     Clients.OthersInGroup(room.Id).SendAsync("onClientLeftFromRoom", Context.ConnectionId);
 
                     room.RemoveClient(Context.ConnectionId);
+
+                    if (room?.ClientIds.Count < 1)
+                    {
+                        var meetingId = _roomManager.GetRoom(room.Id).MeetingId;
+                        Meeting meeting = _dbContext.Meetings.FirstOrDefault(m => m.Id == meetingId);
+
+                        meeting.EndedAt = DateTime.Now;
+
+                        _dbContext.Meetings.Update(meeting);
+                        _dbContext.SaveChangesAsync();
+
+                        _roomManager.Rooms.Remove(room);
+                    }
                 }
             }
 

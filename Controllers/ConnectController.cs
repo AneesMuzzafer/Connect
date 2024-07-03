@@ -1,8 +1,11 @@
-﻿using Connect.Signal;
+﻿using Connect.Data;
+using Connect.Models;
+using Connect.Signal;
 using Connect.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace Connect.Controllers
 {
@@ -10,9 +13,12 @@ namespace Connect.Controllers
     public class ConnectController : Controller
     {
         private readonly RoomManager _roomManager;
-        public ConnectController(RoomManager rm)
+        private readonly ApplicationDbContext _context;
+
+        public ConnectController(RoomManager roomManager, ApplicationDbContext context)
         {
-            _roomManager = rm;
+            _roomManager = roomManager;
+            _context = context;
         }
 
         [Route("/Connect")]
@@ -22,17 +28,10 @@ namespace Connect.Controllers
         }
 
         [Route("/Connect/{roomId}")]
-        public IActionResult Meeting(string roomId)
+        public async Task<IActionResult> Meeting(string roomId)
         {
-            //foreach (var room in _roomManager.Rooms)
-            //{
-            //    Debug.WriteLine(room.Id);
-            //}
-
             if (!_roomManager.RoomExist(roomId))
             {
-
-                //Debug.WriteLine($"Inside: {roomId}");
                 return View("Invalid");
             }
 
@@ -40,10 +39,23 @@ namespace Connect.Controllers
         }
 
         [Route("/Start")]
-        public IActionResult Start()
+        public async Task<IActionResult> Start()
         {
             string newRoomId = RoomIdGenerator.Create();
-            _roomManager.AddRoom(new Room(newRoomId));
+            Room newRoom = new Room(newRoomId);
+            _roomManager.AddRoom(newRoom);
+
+            var meeting = new Meeting
+            {
+                RoomId = newRoomId,
+                StartedAt = DateTime.Now,
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            };
+
+            _context.Meetings.Add(meeting);
+            await _context.SaveChangesAsync();
+
+            newRoom.SetMeetingId(meeting.Id);
 
             return Redirect($"/Connect/{newRoomId}");
         }
