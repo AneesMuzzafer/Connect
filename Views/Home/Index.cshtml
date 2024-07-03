@@ -2,14 +2,47 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="flex-1 full-height-footer flex flex-col items-center justify-center md:flex-row">
+    <div class="flex flex-col items-center justify-center gap-6 p-14 md:flex-1 md:items-end md:pr-40">
+        <div class="text-center text-3xl md:leading-relaxed md:text-right md:text-5xl">
+            <span class="inline-block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text font-medium text-transparent underline">
+                Connect
+            </span>
+            beyond Boundaries, <br> Share beyond Limits!
+        </div>
+        <div class="flex w-10/12 flex-wrap gap-2 md:justify-end">
+            <button id="startMeeting" class="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 font-medium text-indigo-600 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-white md:w-auto group-hover:from-purple-600 group-hover:to-blue-500 dark:focus:ring-blue-800">
+                <span class="relative w-full rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in dark:bg-gray-900 md:w-auto group-hover:bg-opacity-0">
+                    Start a meeting
+                </span>
+            </button>
+            <div class="flex gap-2">
+                <input id="setMeetingId" class="w-full rounded-lg border border-gray-300 bg-white p-2.5 py-2.5 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white md:w-40 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter Connect ID" />
+                <button id="enterMeeting">
+                    <span class="inline-block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-lg font-medium text-transparent underline hover:cursor-pointer">Join</span>
+                </button>
 
-    <button type="submit" id="startMeeting">Start a meeting</button>
+            </div>
+        </div>
+    </div>
 
-    <input id="setMeetingId" type="text" value="abc" />
-    <button id="enterMeeting" type="submit">Enter</button>
+    <div class="flex justify-center md:justify-start md:flex-1">
+        <div class="flex w-1/2 flex-col items-center gap-4 md:gap-8">
+            <img src="~/assets/illustration_home.svg" class="w-full" />
+            <div class="text-center text-lg text-slate-800">Share as many screens as you like.</div>
+        </div>
+    </div>
 
 </div>
+
+@section Footer {
+    <footer class="border-t-[1px] h-10 border-t-indigo-600">
+        <div class="m-auto flex h-full w-full items-center justify-center break-words text-xs md:text-sm">
+            &copy; 2024 &nbsp;<span class="font-medium">Connect</span>&nbsp; |  Made with &nbsp;<span style="font-size: 20px; color: #e25555;">&hearts;</span> &nbsp; by &nbsp;<span class="font-medium">Anees Muzzafer Shah</span>&nbsp;
+        </div>
+    </footer>
+}
+
 
 @section Scripts {
     <script>

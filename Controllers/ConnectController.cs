@@ -24,18 +24,19 @@ namespace Connect.Controllers
         [Route("/Connect/{roomId}")]
         public IActionResult Meeting(string roomId)
         {
-            foreach (var room in _roomManager.Rooms) {
-                Debug.WriteLine(room.Id);
-            }
+            //foreach (var room in _roomManager.Rooms)
+            //{
+            //    Debug.WriteLine(room.Id);
+            //}
 
             if (!_roomManager.RoomExist(roomId))
             {
 
-                Debug.WriteLine($"Inside: {roomId}");
+                //Debug.WriteLine($"Inside: {roomId}");
                 return View("Invalid");
             }
 
-            return View("Room", roomId);
+            return View("Index", roomId);
         }
 
         [Route("/Start")]

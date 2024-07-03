@@ -1,4 +1,4 @@
-html {
+/*html {
   font-size: 14px;
 }
 
@@ -16,7 +16,31 @@ html {
   position: relative;
   min-height: 100%;
 }
+*/
+.btn-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border: solid 1px white;
+}
 
-body {
-  margin-bottom: 60px;
+.btn-circle:hover {
+    background-color: rgba(255,255, 255, 0.5);
+}
+
+.video-control {
+    color: black;
+    font-size: 16px;
+}
+
+.full-height {
+    height: calc(100vh - 40px);
+}
+
+.full-height-footer {
+    height: calc(100vh - 80px);
 }

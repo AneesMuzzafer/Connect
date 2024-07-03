@@ -37,6 +37,7 @@ namespace Connect.Signal
         public async Task onEnterRoom(string roomId)
         {
             Room? room = _roomManager.Rooms.Find(r => string.Equals(roomId, r.Id));
+            Debug.WriteLine("On Enter room");
 
             if (room == null)
             {
@@ -44,6 +45,8 @@ namespace Connect.Signal
             }
 
             List<string> clientsInRoom = room.GetClientsInRoom();
+
+            Debug.WriteLine($"Clients in room : {clientsInRoom.Count}");
 
             if (!clientsInRoom.Exists(c => string.Equals(c, Context.ConnectionId)))
             {

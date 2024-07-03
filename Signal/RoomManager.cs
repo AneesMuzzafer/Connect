@@ -11,7 +11,6 @@ namespace Connect.Signal
         }
 
         public void AddRoom(Room room) {
-            Debug.WriteLine($"Added - {room.Id}");
             Rooms.Add(room);
         }
 

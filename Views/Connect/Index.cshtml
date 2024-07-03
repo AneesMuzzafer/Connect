@@ -1,23 +1,61 @@
-﻿<h1>@Model</h1>
+﻿@{
+    ViewData["MeetId"] = @Model;
+}
 
 <input hidden id="meetingId" value="@Model" />
 
-<button id="join">Join</button>
-
-<div style="width: 100%; height: 30px; display:flex">
-    <button class="" id="disconnect">Hang Up</button>
-    <button id="video-off">Turn Off Video</button>
-    <button id="mute">Mute</button>
-    <button id="share">Share Screen</button>
-    <button id="stopshare">Stop Share Screen</button>
-</div>
-
-<div id="playerWrapper" class="mt-2 border-1 display-flex border border-solid" style="width: 100%; height: 400px">
-    <div style="flex:1;">
-        <video id="localVideo" autoplay playsinline style="width: 100%; height: 100%; border: solid 2px gray;"></video>
+<div id="panel-join" class="full-height flex flex-col flex-wrap md:flex-row">
+    <div id="playerWrapperx" class="flex-1 relative flex items-center justify-center px-10 md:flex-[2] md:justify-end">
+        <div class="relative flex w-full items-center justify-center md:w-8/12">
+            <div class="w-full">
+                <video id="localVideoLobby" class="w-full rounded-2xl bg-gray-700" autoplay playsinline></video>
+            </div>
+            <div class="absolute bottom-0 flex w-full justify-center p-8">
+                <div class="flex gap-4">
+                    <button class="btn btn-circle" id="video-off">
+                        <i class="bi bi-camera-video-fill video-control"></i>
+                    </button>
+                    <button class="btn btn-circle" id="mute">
+                        <i class="bi bi-mic-fill video-control"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex-1 flex flex-col items-center justify-start px-10 md:justify-center md:items-start">
+        <div class="flex flex-col items-center gap-5">
+            <div class="text-xl font-medium">@Model</div>
+            <div>No one else is here</div>
+            <button class="rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 px-10 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800" id="join">Join</button>
+        </div>
     </div>
 </div>
 
+<div style="display:none;" id="panel-in-meet" class="full-height flex flex-col">
+    <div id="playerWrapper" class="flex-1 flex flex-wrap items-center justify-center bg-neutral-800">
+        <div style="width: 100vw; height: calc(100vh - 120px);" class="videoTile p-10">
+            <video id="localVideo" style="height: 100%; width:100%; object-fit:cover" class="rounded-2xl bg-gray-700" autoplay playsinline></video>
+        </div>
+    </div>
+    <div class="flex h-20 w-full items-center justify-center bg-neutral-800">
+        <div class="flex gap-4">
+
+            <button class="btn btn-circle" id="disconnect">
+                <i class="bi bi-telephone-minus-fill video-control text-red-500"></i>
+            </button>
+            <button class="btn btn-circle" id="video-off">
+                <i class="bi bi-camera-video-fill video-control"></i>
+            </button>
+            <button class="btn btn-circle" id="mute">
+                <i class="bi bi-mic-fill video-control"></i>
+            </button>
+            <button class="btn btn-circle" id="share">
+                <i class="bi bi-tv-fill video-control"></i>
+            </button>
+
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="~/js/signalr/dist/browser/signalr.js"></script>

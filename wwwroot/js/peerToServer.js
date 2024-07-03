@@ -6,6 +6,7 @@ let roomId = document.getElementById("meetingId").value;
 
 joinButton.addEventListener("click", () => {
     connection.send("onEnterRoom", roomId);
+    setHasJoined(true);
 });
 
 connection.on("onGetClientsInRoomFromWaitingRoom", (clientListJson) => {
@@ -39,7 +40,8 @@ connection.start().then(() => {
 
 disconnectButton.addEventListener("click", () => {
     connection.send("onLeftRoom", roomId);
-    window.location.assign("/Connect");
+    setHasJoined(true);
+    window.location.assign("/");
 });
 
 function informOthersOfStoppedShare(streamId) {
